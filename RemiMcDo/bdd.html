@@ -1,0 +1,243 @@
+<link rel="stylesheet" href="index.css" type="text/css"/>
+
+<head>
+<title>LA BDD</title>
+<link rel="icon" href="img/favicon.ico" />
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<html>
+<body>
+<h1>JSON UNE PERTURBATION DANS LA FORCE</h1>
+
+Alors que le projet avançait, une grande id&eacute;e traversa les esprits embrum&eacute;s de nos h&eacute;ros : il fallait rendre le code le plus g&eacute;n&eacute;rique possible pour permettre une r&eacute;utilisation dans d'autres contextes. C'est ainsi que naquit la BDD.
+<br/><br/>
+La BDD, c'est un concentr&eacute; de technologie au service d'un seul objectif : la flexibilit&eacute;. Face &agrave; l'immensit&eacute; du d&eacute;fi, c'est naturellement vers Antoine qu'ils se sont tourn&eacute;s pour mettre en &oelig;uvre cette pierre angulaire de CyberSCADA.
+<br/><br/>
+Retrouvez ci-dessous un morceau du code tant vant&eacute;, pour le plaisir des yeux. Tout, depuis l'architecture du code jusqu'au choix des technologies respire l'intelligence. C'est simple, le Java de cette BDD est aussi bien &eacute;crite que le HTML de ce site.
+<br/><br/><br/>
+<div align="left">
+<code>
+package database.manager;<br/>
+import java.io.BufferedReader;<br/>
+import java.io.FileReader;<br/>
+import java.io.IOException;<br/>
+import java.nio.file.Files;<br/>
+import java.nio.file.Paths;<br/>
+import java.util.HashSet;<br/>
+import java.util.Set;<br/>
+import org.json.*;<br/>
+<br/>
+public class DBManager {<br/>
+&emsp;&emsp;&emsp;&emsp;private String bdd;<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public DBManager(String location) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;this.bdd = location;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public DBManager() {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;this.bdd = "database.json";<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public JSONObject init() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return new JSONObject(new JSONTokener(new BufferedReader(new FileReader(this.bdd))));<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getUsers() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray arr_u = bdd.getJSONArray("user");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> users = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;String tt;<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < arr_u.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;tt = arr_u.getJSONObject(i).getString("login");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;users.add(tt);<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return users;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public String getPassword(String user) throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray users = bdd.getJSONArray("user");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < users.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if (user.equals(users.getJSONObject(i).getString("login"))) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return users.getJSONObject(i).getString("mdp");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return "err_user";<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getRoles() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray arr_r = bdd.getJSONArray("role");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> roles = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;String tt;<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < arr_r.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;tt = arr_r.getJSONObject(i).getString("nom");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;roles.add(tt);<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return roles;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getRoles(String user) throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray users = bdd.getJSONArray("user");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> setOfRoles = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < users.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if (user.equals(users.getJSONObject(i).getString("login"))) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray roles = users.getJSONObject(i).getJSONArray("roles");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int j = 0; j < roles.length(); j++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRoles.add(roles.getString(j));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRoles;<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRoles.add("err_user");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRoles;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getRightEcriture(String role)throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray roles = bdd.getJSONArray("role");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> setOfRights = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < roles.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if (role.equals(roles.getJSONObject(i).getString("nom"))) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray rights = roles.getJSONObject(i).getJSONArray("dEcriture");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int j = 0; j < rights.length(); j++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRights.add(bdd.getJSONArray("variable").getJSONObject(j).getString("nom"));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRights;<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRights.add("err_role");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRights;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getRightLecture(String role)throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray roles = bdd.getJSONArray("role");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> setOfRights = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < roles.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if (role.equals(roles.getJSONObject(i).getString("nom"))) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray rights = roles.getJSONObject(i).getJSONArray("dLecture");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int j = 0; j < rights.length(); j++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRights.add(bdd.getJSONArray("variable").getJSONObject(j).getString("nom"));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRights;<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRights.add("err_role");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRights;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getRuleLecture() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray rLecture = bdd.getJSONObject("rule").getJSONArray("lecture");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> setOfRules = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < rLecture.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRules.add(bdd.getJSONArray("variable").getJSONObject(rLecture.getInt(i)).getString("nom"));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRules;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getRuleEcriture() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray rLecture = bdd.getJSONObject("rule").getJSONArray("ecriture");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> setOfRules = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < rLecture.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfRules.add(bdd.getJSONArray("variable").getJSONObject(rLecture.getInt(i)).getString("nom"));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setOfRules;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public String[] getAddress(String a) throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;String[] rslt = new String[3];<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;rslt[0] = bdd.getJSONObject("ip").getJSONArray(a).getString(0);<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;rslt[1] = bdd.getJSONObject("ip").getJSONArray(a).getString(1);<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;rslt[2] = bdd.getJSONObject("ip").getJSONArray(a).getString(2);<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return rslt;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public String[] getXML(String name) throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;String[] ret = new String[1];<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if(name == null){<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray nom = bdd.getJSONArray("xml");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;ret = new String[nom.length()];<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for(int i=0; i<nom.length();i++){<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;ret[i] = nom.getJSONObject(i).getString("x");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;else{<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;byte[] encoded = Files.readAllBytes(Paths.get(name));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;ret[0] = new String(encoded);<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return ret;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getVar() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;Set<String> setOfVar = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < bdd.getJSONArray("variable").length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setOfVar.add(bdd.getJSONArray("variable").getJSONObject(i).getString("nom"));<br/>
+&emsp;&emsp;&emsp;&emsp;}&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;return setOfVar;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getTopIP() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray topIP = bdd.getJSONObject("topIP").getJSONArray("ip");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> setIP = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < topIP.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setIP.add(topIP.getString(i));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setIP;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public Set<String> getLowIP() throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONObject bdd = this.init();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;JSONArray ip = bdd.getJSONObject("lowIP").getJSONArray("ip");<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Set<String> setIP = new HashSet<String>();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for (int i = 0; i < ip.length(); i++) {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;setIP.add(ip.getString(i));<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return setIP;<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;<br/>
+&emsp;&emsp;&emsp;&emsp;public static void main (String[] args) throws IOException {<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;DBManager dbm = new DBManager();<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;for(String s : dbm.getRuleLecture()){<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;System.out.println(s);<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br/>
+&emsp;&emsp;&emsp;&emsp;}<br/>
+}
+</code>
+</div>
+<br/><br/><br/>
+⁂
+
+<h4>Le saviez-vous ?</h4>
+On retrouve des extraits de la BDD dans les parchemins de la mer morte.
+<br/><br/>
+La BDD permet de soigner le cancer et de ramener l'être aim&eacute;.
+<br/><br/>
+En lisant entre les lignes, on retrouve dans la BDD la recette d'une pommade contre l'ecz&eacute;ma.
+<br/><br/>
+C'est &agrave; la fin de la foire qu'on compte les bouses.
+<br/><br/><br/>
+⁂
+
+<br/><br/>
+
+<h4>Voir aussi</h4>
+<a href="http://chevre.reussir.fr/public/index.php">La Ch&egrave;vre, la revue des &eacute;leveurs de ch&egrave;vres</a>
+<br/><br/>
+<a href="aubergine.html">La par&eacute;idolie, c'est quand on a l'impression de voir un visage dans un objet quelconque. Exemple avec une aubergine.</a>
+<br/><br/>
+<a href="doigt.html">Likez la page &laquo; Un doigt par jour &raquo;</a>
+<br/><br/><br/>
+[ <a href="index.html">Accueil</a> ]
+</body>
+</html>

@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="index.css" type="text/css"/>
+
+<html>
+<head>
+<title>KIKIMETER</title>
+<link rel="icon" href="img/favicon.ico" />
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<h1>EN SITUATION DE CONLFIT, IL FAUT FAIRE APPEL À UN ARBITRE IMPARTIAL</h1>
+Ci-dessous se trouve le Kikimeter&trade;. Il permet de distinguer ceux qui travaillent de ceux qui se foutent définitivement de la gueule du monde.
+<br/><br/>
+<svg id="kikimeter" width="550" height="500">
+    <line x1="20" y1="10" x2="20" y2="410" stroke-width="2" stroke="black" />
+    <line x1="10" y1="400" x2="600" y2="400" stroke-width="2" stroke="black" />
+    <rect id="rect1" x="40" y="30" width="60" height="370" stroke="black" fill="red" stroke-width="2"/>
+    <text x="65" y="420">R</text>
+    <rect id="rect2" x="120" y="30" width="60" height="370" stroke="black" fill="red" stroke-width="2"/>
+    <text x="140" y="420">We</text>
+    <rect id="rect3" x="200" y="30" width="60" height="370" stroke="black" fill="red" stroke-width="2"/>
+    <text x="225" y="420">A</text>
+    <rect id="rect4" x="280" y="30" width="60" height="370" stroke="black" fill="red" stroke-width="2"/>
+    <text x="305" y="420">D</text>
+    <rect id="rect5" x="360" y="30" width="60" height="370" stroke="black" fill="red" stroke-width="2"/>
+    <text x="385" y="420">J</text>
+    <rect id="rect6" x="440" y="30" width="60" height="370" stroke="black" fill="red" stroke-width="2"/>
+    <text x="460" y="420">Wa</text>
+</svg>
+<script>
+
+	rects = ["rect1", "rect2", "rect3", "rect4", "rect5", "rect6"];
+
+	for (i = 0; i < rects.length; i++) {
+		var rand = Math.floor(Math.random() * 370);
+		var rect = document.getElementById(rects[i]);
+		rect.setAttributeNS(null, 'y', 30 + rand);
+		rect.setAttributeNS(null, 'height', 370 - rand);
+	}
+</script>
+<br/><br/><br/>
+[ <a href="index.html">Accueil</a> ]
+</body>
+</head>
